@@ -26,6 +26,17 @@ function compileSass() {
 // Tarefa do Sass
 gulp.task('sass', compileSass);
 
+// Função compila css plugins
+function pluginsCSS(){
+    return gulp.src('css/lib/*.css')
+    .pipe(concat('plugins.css'))
+    .pipe(gulp.dest('css/'))
+    .pipe(browserSync.stream())
+}
+
+// Tarefa pluginsCSS
+gulp.task('plugins-css', pluginsCSS)
+
 // Função compila js
 function concatJs(){
     return gulp.src('js/scripts/*.js')
@@ -50,6 +61,15 @@ function concatJs(){
     .pipe(browserSync.stream());
 }
 
+function pluginsJs(){
+    return gulp.src(['./js/lib/aos.min.js', './js/lib/swiper.min.js'])
+    .pipe(concat('plugins.js'))
+    .pipe(gulp.dest('js/'))
+    .pipe(browserSync.stream())
+}
+
+gulp.task('plugins-js', pluginsJs);
+
 // Tarefa concatJs
 gulp.task('concat-js', concatJs)
 
@@ -68,8 +88,10 @@ gulp.task('browser-sync', browser)
 // Função do Watch alteração scss e html
 function watch(){
     gulp.watch('scss/*.scss', compileSass);
+    gulp.watch('css/lib/*.css', pluginsCSS);
     gulp.watch('*.html').on('change', browserSync.reload);
-    gulp.watch('js/scripts/*js', concatJs);
+    gulp.watch('js/scripts/*.js', concatJs);
+    gulp.watch('js/lib/*.js', pluginsJs);
 }
 
 // Tarefa do Watch
@@ -77,5 +99,5 @@ gulp.task('watch', watch);
 
 
 // Tarefas default que executa watch e browserSync
-gulp.task('default', gulp.parallel('watch', 'browser-sync', 'sass', 'concat-js'));
+gulp.task('default', gulp.parallel('watch', 'browser-sync', 'sass', 'plugins-css', 'concat-js', 'plugins-js'));
 
